@@ -1,25 +1,13 @@
 'use client';
 
 import { motion, useInView } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { useRef } from 'react';
 import IPhoneMockup from '../3d/IPhoneMockup';
 import Image from 'next/image';
 
 export default function SolutionSection() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-20%' });
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
-      setMousePosition({ x, y });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   return (
     <section 
@@ -51,7 +39,7 @@ export default function SolutionSection() {
         animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
         transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
       >
-        <IPhoneMockup mouseX={mousePosition.x} mouseY={mousePosition.y} />
+        <IPhoneMockup />
       </motion.div>
 
       {/* Logo and text below */}
