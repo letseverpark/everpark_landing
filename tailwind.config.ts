@@ -9,11 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        ever: {
+          green: '#00b58e',
+          'green-light': '#00ffbd',
+          'green-dark': '#008f6f',
+        },
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Space Grotesk', 'system-ui', 'sans-serif'],
       },
     },
   },
   plugins: [],
 };
+
 export default config;
