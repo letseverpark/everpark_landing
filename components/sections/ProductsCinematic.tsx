@@ -148,7 +148,7 @@ function FinalSlide() {
             transition={{ delay: 0.5, duration: 0.8 }}
           >
             <p className="text-2xl md:text-3xl font-semibold text-gray-600">
-              The All-In-One Parking App
+              The all in one parking app
             </p>
           </motion.div>
         </motion.div>

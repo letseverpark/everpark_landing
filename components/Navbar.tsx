@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Logo from './Logo';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,19 +25,18 @@ export default function Navbar() {
       <div className={`max-w-5xl mx-auto px-4 md:px-6 transition-all duration-500 ${
         scrolled ? 'mx-4 md:mx-auto' : ''
       }`}>
-        <div className={`flex items-center justify-between transition-all duration-500 ${
+        <div className={`flex items-center justify-between transition-all duration-500 h-[70px] ${
           scrolled ? 'nav-glass rounded-full px-6 py-3' : ''
         }`}>
           {/* Logo */}
-          <a href="#" className="flex items-center gap-0.5">
-            <span className="text-xl font-bold text-[#00b58e]">Ever</span>
-            <span className="text-xl font-bold text-gray-900">Park</span>
+          <a href="#" className="flex items-center">
+            <Logo width={100} height={34} />
           </a>
 
           {/* CTA */}
           <motion.a
             href="#descargar"
-            className="btn-liquid px-5 py-2.5 rounded-full text-sm font-semibold text-[#00b58e]"
+            className="btn-liquid px-2.5 py-2.5 rounded-[15px] text-sm font-semibold text-black"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >

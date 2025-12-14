@@ -78,19 +78,6 @@ export default function ProblemSection() {
       ref={containerRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
     >
-      {/* Subtle animated background */}
-      <div className="absolute inset-0 opacity-[0.03]">
-        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <pattern id="cars" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-            <circle cx="10" cy="10" r="1" fill="currentColor">
-              <animate attributeName="cx" values="10;15;10;5;10" dur="8s" repeatCount="indefinite" />
-              <animate attributeName="cy" values="10;5;10;15;10" dur="8s" repeatCount="indefinite" />
-            </circle>
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#cars)" />
-        </svg>
-      </div>
-
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-problem" />
 
@@ -113,7 +100,7 @@ export default function ProblemSection() {
             >
               <span className={`font-bold hero-number leading-none tracking-tight ${
                 currentSlide.number.length > 4 
-                  ? 'text-[5rem] sm:text-[7rem] md:text-[10rem] lg:text-[14rem]' 
+                  ? 'text-[5rem] sm:text-[7rem] md:text-[10rem] lg:text-[260px]' 
                   : 'text-[8rem] sm:text-[12rem] md:text-[16rem] lg:text-[22rem]'
               }`}>
                 {currentSlide.number}
@@ -148,7 +135,6 @@ export default function ProblemSection() {
         className="absolute bottom-12 left-1/2 -translate-x-1/2 scroll-indicator"
       >
         <div className="flex flex-col items-center gap-3 text-gray-400">
-          <span className="text-xs tracking-widest uppercase">Scroll</span>
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>

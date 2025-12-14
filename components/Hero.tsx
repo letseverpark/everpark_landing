@@ -72,7 +72,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-4"
         >
-          <span className="text-[8rem] sm:text-[10rem] md:text-[14rem] lg:text-[18rem] font-bold hero-number leading-none tracking-tight">
+          <span className="text-[8rem] sm:text-[10rem] md:text-[14rem] lg:text-[260px] font-bold hero-number leading-[1.25] lg:leading-[200px] tracking-tight">
             100h
           </span>
         </motion.div>

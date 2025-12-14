@@ -122,7 +122,7 @@ export const translations = {
     hero: {
       title1: 'Find parking',
       title2: 'in minutes, always',
-      subtitle: 'The all-in-one parking app',
+      subtitle: 'The all in one parking app',
       description: 'We connect people searching for a spot with others leaving theirs. Private garages, commercial parking, and a smart assistant that chooses for you.',
       cta: 'Start for free',
       stats: {
@@ -160,7 +160,7 @@ export const translations = {
     // Products Section (4 Pillars)
     products: {
       title: 'EverPark 360º',
-      subtitle: 'The all-in-one parking solution',
+      subtitle: 'The all in one parking solution',
       exchanges: {
         name: 'EverPark Exchanges',
         tagline: 'Earn when you leave, save time when you arrive',

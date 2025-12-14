@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, MotionValue, useSpring } from 'framer-motion';
+import { useRef, useState, useCallback } from 'react';
 
 interface StrikeLineProps {
   text: string;
@@ -17,7 +17,7 @@ function StrikeLine({ text, strikeProgress, textOpacity }: StrikeLineProps) {
       className="text-center relative"
       style={{ opacity: textOpacity }}
     >
-      <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium text-gray-500 relative inline-block">
+      <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium text-gray-500 relative inline-block whitespace-nowrap">
         {text}
         <motion.div
           className="absolute left-0 top-1/2 h-[4px] bg-gradient-to-r from-[#00b58e] to-[#00b58e]/40 rounded-full -translate-y-1/2"
@@ -28,73 +28,331 @@ function StrikeLine({ text, strikeProgress, textOpacity }: StrikeLineProps) {
   );
 }
 
+// Interactive letter with magnetic hover effect
+function InteractiveLetter({ 
+  letter, 
+  index,
+  onHover,
+  hoveredIndex,
+  isGreen = false,
+  letterOpacity,
+  letterY,
+}: { 
+  letter: string;
+  index: number;
+  onHover: (index: number | null) => void;
+  hoveredIndex: number | null;
+  isGreen?: boolean;
+  letterOpacity: MotionValue<number>;
+  letterY: MotionValue<number>;
+}) {
+  // Calculate scale based on distance from hovered letter
+  const getScale = () => {
+    if (hoveredIndex === null) return 1;
+    const distance = Math.abs(index - hoveredIndex);
+    if (distance === 0) return 1.3;
+    if (distance === 1) return 1.15;
+    if (distance === 2) return 1.06;
+    return 1;
+  };
+
+  const getHoverY = () => {
+    if (hoveredIndex === null) return 0;
+    const distance = Math.abs(index - hoveredIndex);
+    if (distance === 0) return -10;
+    if (distance === 1) return -5;
+    if (distance === 2) return -2;
+    return 0;
+  };
+
+  const scale = useSpring(getScale(), { stiffness: 500, damping: 28 });
+  const hoverY = useSpring(getHoverY(), { stiffness: 500, damping: 28 });
+
+  const combinedY = useTransform(
+    [letterY, hoverY] as MotionValue<number>[], 
+    ([scrollY, hY]) => (scrollY as number) + (hY as number)
+  );
+
+  if (letter === ' ') {
+    return <span className="inline-block w-[0.3em]">&nbsp;</span>;
+  }
+
+  return (
+    <motion.span
+      className="inline-block cursor-default select-none"
+      style={{ 
+        scale,
+        y: combinedY,
+        opacity: letterOpacity,
+        transformOrigin: 'center center',
+        paddingBottom: '0.1em',
+        ...(isGreen && {
+          background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }),
+      }}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(null)}
+    >
+      {letter}
+    </motion.span>
+  );
+}
+
+// Letter-by-letter scroll-controlled text (appears once and stays)
+function ScrollLetterText({ 
+  text, 
+  isGreen = false,
+  className = '',
+  scrollProgress,
+  startProgress,
+  endProgress,
+}: { 
+  text: string;
+  isGreen?: boolean;
+  className?: string;
+  scrollProgress: MotionValue<number>;
+  startProgress: number;
+  endProgress: number;
+}) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
+  const handleHover = useCallback((index: number | null) => {
+    setHoveredIndex(index);
+  }, []);
+
+  const letters = text.split('');
+  const totalLetters = letters.filter(l => l !== ' ').length;
+  const progressPerLetter = (endProgress - startProgress) / totalLetters;
+
+  let letterIndex = 0;
+
+  return (
+    <div className={`${className}`}>
+      {letters.map((letter, i) => {
+        if (letter === ' ') {
+          return <span key={i} className="inline-block w-[0.3em]">&nbsp;</span>;
+        }
+        
+        const currentIndex = letterIndex;
+        const letterStart = startProgress + (currentIndex * progressPerLetter);
+        const letterEnd = letterStart + progressPerLetter * 3;
+        
+        const opacity = useTransform(scrollProgress, [letterStart, letterEnd], [0, 1]);
+        const y = useTransform(scrollProgress, [letterStart, letterEnd], [25, 0]);
+        
+        const smoothOpacity = useSpring(opacity, { stiffness: 150, damping: 20 });
+        const smoothY = useSpring(y, { stiffness: 150, damping: 20 });
+        
+        letterIndex++;
+        
+        return (
+          <InteractiveLetter
+            key={i}
+            letter={letter}
+            index={currentIndex}
+            onHover={handleHover}
+            hoveredIndex={hoveredIndex}
+            isGreen={isGreen}
+            letterOpacity={smoothOpacity}
+            letterY={smoothY}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+// "Vueltas" text that appears letter by letter, then disappears/reappears as a whole
+function VueltasText({ 
+  scrollProgress,
+  startProgress,
+  endProgress,
+  className = '',
+}: { 
+  scrollProgress: MotionValue<number>;
+  startProgress: number;
+  endProgress: number;
+  className?: string;
+}) {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  
+  const handleHover = useCallback((index: number | null) => {
+    setHoveredIndex(index);
+  }, []);
+
+  const text = "vueltas, y vueltas, y vueltas...";
+  const letters = text.split('');
+  const totalLetters = letters.filter(l => l !== ' ').length;
+  const progressPerLetter = (endProgress - startProgress) / totalLetters;
+
+  // After all letters appear (endProgress), the whole text does:
+  // Stay visible -> Disappear -> Reappear -> Disappear -> Reappear (2 cycles)
+  // endProgress = 0.58, then:
+  // 0.58-0.62: visible
+  // 0.62-0.66: fade out (1st disappear)
+  // 0.66-0.70: invisible
+  // 0.70-0.74: fade in (1st reappear)
+  // 0.74-0.78: visible
+  // 0.78-0.82: fade out (2nd disappear)
+  // 0.82-0.86: invisible
+  // 0.86-0.90: fade in (2nd reappear)
+  // 0.90+: stay visible
+  
+  const wholeTextOpacity = useTransform(
+    scrollProgress,
+    [0, endProgress, 0.62, 0.66, 0.70, 0.74, 0.78, 0.82, 0.86, 0.90, 1],
+    [1, 1,           1,    0,    0,    1,    1,    0,    0,    1,    1]
+  );
+  
+  const wholeTextScale = useTransform(
+    scrollProgress,
+    [0, endProgress, 0.62, 0.66, 0.70, 0.74, 0.78, 0.82, 0.86, 0.90, 1],
+    [1, 1,           1,    0.8,  0.8,  1,    1,    0.8,  0.8,  1,    1]
+  );
+  
+  const wholeTextY = useTransform(
+    scrollProgress,
+    [0, endProgress, 0.62, 0.66, 0.70, 0.74, 0.78, 0.82, 0.86, 0.90, 1],
+    [0, 0,           0,    -25,  25,   0,    0,    -25,  25,   0,    0]
+  );
+
+  const smoothWholeOpacity = useSpring(wholeTextOpacity, { stiffness: 80, damping: 20 });
+  const smoothWholeScale = useSpring(wholeTextScale, { stiffness: 80, damping: 20 });
+  const smoothWholeY = useSpring(wholeTextY, { stiffness: 80, damping: 20 });
+
+  let letterIndex = 0;
+
+  return (
+    <motion.div 
+      className={`${className}`}
+      style={{
+        opacity: smoothWholeOpacity,
+        scale: smoothWholeScale,
+        y: smoothWholeY,
+      }}
+    >
+      {letters.map((letter, i) => {
+        if (letter === ' ') {
+          return <span key={i} className="inline-block w-[0.3em]">&nbsp;</span>;
+        }
+        
+        const currentIndex = letterIndex;
+        const letterStart = startProgress + (currentIndex * progressPerLetter);
+        const letterEnd = letterStart + progressPerLetter * 3;
+        
+        // Individual letter appearance
+        const letterOpacity = useTransform(scrollProgress, [letterStart, letterEnd], [0, 1]);
+        const letterY = useTransform(scrollProgress, [letterStart, letterEnd], [25, 0]);
+        
+        const smoothLetterOpacity = useSpring(letterOpacity, { stiffness: 150, damping: 20 });
+        const smoothLetterY = useSpring(letterY, { stiffness: 150, damping: 20 });
+
+        // Hover effects
+        const getScale = () => {
+          if (hoveredIndex === null) return 1;
+          const distance = Math.abs(currentIndex - hoveredIndex);
+          if (distance === 0) return 1.3;
+          if (distance === 1) return 1.15;
+          if (distance === 2) return 1.06;
+          return 1;
+        };
+
+        const getHoverY = () => {
+          if (hoveredIndex === null) return 0;
+          const distance = Math.abs(currentIndex - hoveredIndex);
+          if (distance === 0) return -10;
+          if (distance === 1) return -5;
+          if (distance === 2) return -2;
+          return 0;
+        };
+
+        const hoverScale = useSpring(getScale(), { stiffness: 500, damping: 28 });
+        const hoverY = useSpring(getHoverY(), { stiffness: 500, damping: 28 });
+
+        const combinedY = useTransform(
+          [smoothLetterY, hoverY] as MotionValue<number>[], 
+          ([scrollY, hY]) => (scrollY as number) + (hY as number)
+        );
+
+        letterIndex++;
+
+        return (
+          <motion.span
+            key={i}
+            className="inline-block cursor-default select-none"
+            style={{ 
+              scale: hoverScale,
+              y: combinedY,
+              opacity: smoothLetterOpacity,
+              background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              transformOrigin: 'center center',
+              paddingBottom: '0.1em',
+            }}
+            onMouseEnter={() => handleHover(currentIndex)}
+            onMouseLeave={() => handleHover(null)}
+          >
+            {letter}
+          </motion.span>
+        );
+      })}
+    </motion.div>
+  );
+}
+
 export default function ContradictionSection() {
   const sectionRef = useRef(null);
-  const [cardRevealed, setCardRevealed] = useState(false);
-  const [currentNumber, setCurrentNumber] = useState(0);
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end end'],
   });
 
-  // Phase 1: Strike through (0.15 - 0.45)
-  const line1Strike = useTransform(scrollYProgress, [0.15, 0.22], [0, 100]);
-  const line2Strike = useTransform(scrollYProgress, [0.22, 0.29], [0, 100]);
-  const line3Strike = useTransform(scrollYProgress, [0.29, 0.36], [0, 100]);
-  const line4Strike = useTransform(scrollYProgress, [0.36, 0.43], [0, 100]);
+  // Phase 1: Strike through (0.08 - 0.32)
+  const line1Strike = useTransform(scrollYProgress, [0.08, 0.14], [0, 100]);
+  const line2Strike = useTransform(scrollYProgress, [0.14, 0.20], [0, 100]);
+  const line3Strike = useTransform(scrollYProgress, [0.20, 0.26], [0, 100]);
+  const line4Strike = useTransform(scrollYProgress, [0.26, 0.32], [0, 100]);
   
-  const line1Opacity = useTransform(scrollYProgress, [0.20, 0.24], [1, 0.35]);
-  const line2Opacity = useTransform(scrollYProgress, [0.27, 0.31], [1, 0.35]);
-  const line3Opacity = useTransform(scrollYProgress, [0.34, 0.38], [1, 0.35]);
-  const line4Opacity = useTransform(scrollYProgress, [0.41, 0.45], [1, 0.35]);
+  const line1Opacity = useTransform(scrollYProgress, [0.12, 0.16], [1, 0.35]);
+  const line2Opacity = useTransform(scrollYProgress, [0.18, 0.22], [1, 0.35]);
+  const line3Opacity = useTransform(scrollYProgress, [0.24, 0.28], [1, 0.35]);
+  const line4Opacity = useTransform(scrollYProgress, [0.30, 0.34], [1, 0.35]);
 
-  // Phase 2: Card reveal (0.48 - 0.60)
-  const textOpacity = useTransform(scrollYProgress, [0.48, 0.55], [1, 0]);
-  const cardOpacity = useTransform(scrollYProgress, [0.48, 0.55], [0, 1]);
-  const cardScale = useTransform(scrollYProgress, [0.48, 0.58], [0.9, 1]);
-  const cardY = useTransform(scrollYProgress, [0.48, 0.58], [40, 0]);
-  const glowOpacity = useTransform(scrollYProgress, [0.48, 0.55, 0.75], [0, 0.6, 0.3]);
+  // Phase 2: Card reveal
+  const textOpacity = useTransform(scrollYProgress, [0.36, 0.42], [1, 0]);
+  const cardOpacity = useTransform(scrollYProgress, [0.40, 0.46], [0, 1]);
+  const cardScale = useTransform(scrollYProgress, [0.40, 0.48], [0.96, 1]);
+  const cardY = useTransform(scrollYProgress, [0.40, 0.46], [20, 0]);
+  const glowOpacity = useTransform(scrollYProgress, [0.44, 0.50, 0.90], [0, 0.5, 0.25]);
 
-  useEffect(() => {
-    const unsubscribe = scrollYProgress.on('change', (v) => {
-      const revealed = v > 0.52;
-      setCardRevealed(revealed);
-      
-      // Animate number
-      if (revealed && currentNumber < 40) {
-        const timer = setInterval(() => {
-          setCurrentNumber(prev => {
-            if (prev >= 40) {
-              clearInterval(timer);
-              return 40;
-            }
-            return prev + 2;
-          });
-        }, 40);
-        return () => clearInterval(timer);
-      }
-    });
-    return () => unsubscribe();
-  }, [scrollYProgress, currentNumber]);
+  // Smooth springs for card
+  const smoothCardScale = useSpring(cardScale, { stiffness: 100, damping: 25 });
+  const smoothCardY = useSpring(cardY, { stiffness: 100, damping: 25 });
+  const smoothCardOpacity = useSpring(cardOpacity, { stiffness: 100, damping: 25 });
 
   return (
     <section 
       ref={sectionRef}
-      className="relative min-h-[300vh] bg-white"
+      className="relative min-h-[500vh] bg-white"
     >
       <div className="sticky top-0 min-h-screen flex items-center justify-center px-6 py-20">
         
-        {/* Subtle glow background */}
+        {/* Glow background */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center pointer-events-none"
           style={{ opacity: glowOpacity }}
         >
           <div
-            className="w-[600px] h-[600px]"
+            className="w-[600px] h-[400px]"
             style={{
-              background: 'radial-gradient(circle, rgba(0, 181, 142, 0.12) 0%, rgba(0, 181, 142, 0.04) 50%, transparent 70%)',
-              filter: 'blur(80px)',
+              background: 'radial-gradient(ellipse, rgba(0, 181, 142, 0.12) 0%, rgba(0, 181, 142, 0.04) 50%, transparent 70%)',
+              filter: 'blur(50px)',
             }}
           />
         </motion.div>
@@ -107,81 +365,62 @@ export default function ContradictionSection() {
             className="space-y-4 md:space-y-6"
             style={{ opacity: textOpacity }}
           >
-            <StrikeLine text="Hemos digitalizado los taxis." strikeProgress={line1Strike} textOpacity={line1Opacity} />
-            <StrikeLine text="Hemos digitalizado la comida." strikeProgress={line2Strike} textOpacity={line2Opacity} />
-            <StrikeLine text="Hemos digitalizado los pagos." strikeProgress={line3Strike} textOpacity={line3Opacity} />
-            <StrikeLine text="Hasta nuestros emails los escribe la IA." strikeProgress={line4Strike} textOpacity={line4Opacity} />
+            <StrikeLine text="Se ha digitalizado el pedir un taxi." strikeProgress={line1Strike} textOpacity={line1Opacity} />
+            <StrikeLine text="Se ha digitalizado el pedir comida" strikeProgress={line2Strike} textOpacity={line2Opacity} />
+            <StrikeLine text="Se ha digitalizado el hacer un pago." strikeProgress={line3Strike} textOpacity={line3Opacity} />
+            <StrikeLine text="Hasta nuestros emails los escribe una IA." strikeProgress={line4Strike} textOpacity={line4Opacity} />
           </motion.div>
 
-          {/* Reveal card - Liquid Glass Light */}
+          {/* Reveal card */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center"
             style={{ 
-              opacity: cardOpacity, 
-              scale: cardScale,
-              y: cardY,
+              opacity: smoothCardOpacity, 
+              scale: smoothCardScale,
+              y: smoothCardY,
             }}
           >
-            <div className="w-full max-w-4xl">
+            <div className="w-full max-w-4xl relative">
               
-              {/* Liquid Glass Card */}
+              {/* Glass Card */}
               <div 
-                className="relative rounded-[2.5rem] p-10 md:p-14 lg:p-16 overflow-hidden"
+                className="relative rounded-[2.5rem] p-10 md:p-14 lg:p-16"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.7))',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92))',
                   backdropFilter: 'blur(40px)',
                   WebkitBackdropFilter: 'blur(40px)',
-                  boxShadow: `
-                    0 8px 32px rgba(0, 0, 0, 0.08),
-                    0 0 0 1px rgba(255, 255, 255, 0.5),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-                    inset 0 -1px 0 rgba(0, 0, 0, 0.03)
-                  `,
+                  border: '1px solid rgba(0, 0, 0, 0.06)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06)',
                 }}
               >
-                {/* Subtle light refraction */}
-                <div className="absolute inset-0 overflow-hidden rounded-[2.5rem] pointer-events-none">
-                  <div 
-                    className="absolute top-0 left-0 right-0 h-1/2"
-                    style={{ 
-                      background: 'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, transparent 100%)',
-                    }}
-                  />
-                  <motion.div
-                    className="absolute inset-0"
-                    animate={{ x: ['-100%', '200%'] }}
-                    transition={{ duration: 5, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
-                    style={{
-                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
-                      transform: 'skewX(-20deg)',
-                    }}
-                  />
-                </div>
-                
                 {/* Text content */}
                 <div className="relative text-center z-10">
-                  <motion.p 
+                  
+                  {/* Line 1: "Pero seguimos dando" - appears letter by letter */}
+                  <ScrollLetterText
+                    text="Pero seguimos dando"
+                    scrollProgress={scrollYProgress}
+                    startProgress={0.44}
+                    endProgress={0.50}
                     className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-800 leading-tight tracking-tight"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={cardRevealed ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.6 }}
-                  >
-                    Pero seguimos dando
-                    <br />
-                    <span 
-                      className="font-bold"
-                      style={{
-                        background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                      }}
-                    >
-                      {currentNumber} vueltas a la misma manzana
-                    </span>
-                    <br />
-                    <span className="text-gray-500 font-normal text-[0.8em]">esperando que alguien se vaya.</span>
-                  </motion.p>
+                  />
+                  
+                  {/* Line 2: "vueltas, y vueltas, y vueltas..." - appears letter by letter, then disappears/reappears 2x */}
+                  <VueltasText
+                    scrollProgress={scrollYProgress}
+                    startProgress={0.50}
+                    endProgress={0.58}
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-normal tracking-tight mt-2"
+                  />
+                  
+                  {/* Line 3: "esperando a que alguien se vaya." - appears letter by letter */}
+                  <ScrollLetterText
+                    text="esperando a que alguien se vaya."
+                    scrollProgress={scrollYProgress}
+                    startProgress={0.58}
+                    endProgress={0.62}
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-800 leading-tight tracking-tight mt-4"
+                  />
                 </div>
               </div>
             </div>
