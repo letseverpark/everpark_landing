@@ -1,17 +1,11 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useSpring } from 'framer-motion';
 import Image from 'next/image';
 
-interface IPhoneMockupProps {
-  mouseX: number;
-  mouseY: number;
-}
-
-export default function IPhoneMockup({ mouseX, mouseY }: IPhoneMockupProps) {
+export default function IPhoneMockup() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
   
   const rotateX = useSpring(0, { stiffness: 50, damping: 20 });
   const rotateY = useSpring(0, { stiffness: 50, damping: 20 });
@@ -31,7 +25,6 @@ export default function IPhoneMockup({ mouseX, mouseY }: IPhoneMockupProps) {
   };
   
   const handleMouseLeave = () => {
-    setIsHovering(false);
     rotateX.set(0);
     rotateY.set(0);
   };
@@ -42,7 +35,6 @@ export default function IPhoneMockup({ mouseX, mouseY }: IPhoneMockupProps) {
       className="flex justify-center items-center py-4 select-none relative"
       style={{ perspective: '1200px' }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={handleMouseLeave}
     >
       {/* 3D Scene Container */}

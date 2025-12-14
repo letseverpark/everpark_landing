@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 
 interface ProductSlideProps {
@@ -14,7 +14,7 @@ interface ProductSlideProps {
   isLast?: boolean;
 }
 
-function ProductSlide({ id, number, name, tagline, description, accentColor, bgGradient, isLast }: ProductSlideProps) {
+function ProductSlide({ number, name, tagline, description, accentColor, bgGradient, isLast }: ProductSlideProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-30%' });
 
@@ -230,7 +230,7 @@ export default function ProductsCinematic() {
 
   return (
     <section>
-      {products.map((product, i) => (
+      {products.map((product) => (
         <ProductSlide key={product.id} {...product} />
       ))}
       <FinalSlide />

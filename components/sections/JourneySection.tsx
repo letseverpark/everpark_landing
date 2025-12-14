@@ -31,12 +31,10 @@ function Moment({ children, className = '', delay = 0 }: MomentProps) {
 function ComingSoonLetter({ 
   letter, 
   index,
-  totalLetters,
   isInView,
 }: { 
   letter: string;
   index: number;
-  totalLetters: number;
   isInView: boolean;
 }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -106,7 +104,6 @@ function ComingSoonBanner() {
             key={i}
             letter={letter}
             index={i}
-            totalLetters={letters.length}
             isInView={isInView}
           />
         ))}
@@ -152,6 +149,7 @@ function ExchangesDiagram() {
           y: { duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img 
           src="/exchanges-diagram.svg" 
           alt="Diagrama de Exchanges - Intercambio de plazas de parking"

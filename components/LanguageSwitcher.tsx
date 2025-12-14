@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import { useTranslation } from './LanguageProvider';
-import type { Language } from '@/lib/translations';
 
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useTranslation();

@@ -85,7 +85,7 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-6 text-gray-600 space-y-2">
               <li><strong>Acceso:</strong> Solicitar una copia de tus datos personales.</li>
               <li><strong>Rectificación:</strong> Corregir datos inexactos o incompletos.</li>
-              <li><strong>Supresión:</strong> Solicitar la eliminación de tus datos ("derecho al olvido").</li>
+              <li><strong>Supresión:</strong> Solicitar la eliminación de tus datos (&ldquo;derecho al olvido&rdquo;).</li>
               <li><strong>Portabilidad:</strong> Recibir tus datos en un formato estructurado y legible.</li>
               <li><strong>Oposición:</strong> Oponerte al procesamiento de tus datos en ciertas circunstancias.</li>
               <li><strong>Limitación:</strong> Solicitar la restricción del procesamiento de tus datos.</li>

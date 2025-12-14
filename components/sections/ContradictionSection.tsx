@@ -101,6 +101,45 @@ function InteractiveLetter({
   );
 }
 
+// Single letter component that handles its own hooks
+function ScrollLetter({
+  letter,
+  index,
+  scrollProgress,
+  letterStart,
+  letterEnd,
+  onHover,
+  hoveredIndex,
+  isGreen,
+}: {
+  letter: string;
+  index: number;
+  scrollProgress: MotionValue<number>;
+  letterStart: number;
+  letterEnd: number;
+  onHover: (index: number | null) => void;
+  hoveredIndex: number | null;
+  isGreen: boolean;
+}) {
+  const opacity = useTransform(scrollProgress, [letterStart, letterEnd], [0, 1]);
+  const y = useTransform(scrollProgress, [letterStart, letterEnd], [25, 0]);
+  
+  const smoothOpacity = useSpring(opacity, { stiffness: 150, damping: 20 });
+  const smoothY = useSpring(y, { stiffness: 150, damping: 20 });
+
+  return (
+    <InteractiveLetter
+      letter={letter}
+      index={index}
+      onHover={onHover}
+      hoveredIndex={hoveredIndex}
+      isGreen={isGreen}
+      letterOpacity={smoothOpacity}
+      letterY={smoothY}
+    />
+  );
+}
+
 // Letter-by-letter scroll-controlled text (appears once and stays)
 function ScrollLetterText({ 
   text, 
@@ -124,44 +163,121 @@ function ScrollLetterText({
   }, []);
 
   const letters = text.split('');
-  const totalLetters = letters.filter(l => l !== ' ').length;
+  const nonSpaceLetters = letters.filter(l => l !== ' ');
+  const totalLetters = nonSpaceLetters.length;
   const progressPerLetter = (endProgress - startProgress) / totalLetters;
 
-  let letterIndex = 0;
+  // Pre-calculate letter indices and timing
+  const letterData: Array<{ letter: string; letterIndex: number; letterStart: number; letterEnd: number }> = [];
+  let letterIdx = 0;
+  for (let i = 0; i < letters.length; i++) {
+    const letter = letters[i];
+    if (letter === ' ') {
+      letterData.push({ letter, letterIndex: -1, letterStart: 0, letterEnd: 0 });
+    } else {
+      const letterStart = startProgress + (letterIdx * progressPerLetter);
+      const letterEnd = letterStart + progressPerLetter * 3;
+      letterData.push({ letter, letterIndex: letterIdx, letterStart, letterEnd });
+      letterIdx++;
+    }
+  }
 
   return (
     <div className={`${className}`}>
-      {letters.map((letter, i) => {
-        if (letter === ' ') {
+      {letterData.map((data, i) => {
+        if (data.letter === ' ') {
           return <span key={i} className="inline-block w-[0.3em]">&nbsp;</span>;
         }
         
-        const currentIndex = letterIndex;
-        const letterStart = startProgress + (currentIndex * progressPerLetter);
-        const letterEnd = letterStart + progressPerLetter * 3;
-        
-        const opacity = useTransform(scrollProgress, [letterStart, letterEnd], [0, 1]);
-        const y = useTransform(scrollProgress, [letterStart, letterEnd], [25, 0]);
-        
-        const smoothOpacity = useSpring(opacity, { stiffness: 150, damping: 20 });
-        const smoothY = useSpring(y, { stiffness: 150, damping: 20 });
-        
-        letterIndex++;
-        
         return (
-          <InteractiveLetter
+          <ScrollLetter
             key={i}
-            letter={letter}
-            index={currentIndex}
+            letter={data.letter}
+            index={data.letterIndex}
+            scrollProgress={scrollProgress}
+            letterStart={data.letterStart}
+            letterEnd={data.letterEnd}
             onHover={handleHover}
             hoveredIndex={hoveredIndex}
             isGreen={isGreen}
-            letterOpacity={smoothOpacity}
-            letterY={smoothY}
           />
         );
       })}
     </div>
+  );
+}
+
+// Single letter component for VueltasText
+function VueltasLetter({
+  letter,
+  index,
+  scrollProgress,
+  letterStart,
+  letterEnd,
+  onHover,
+  hoveredIndex,
+}: {
+  letter: string;
+  index: number;
+  scrollProgress: MotionValue<number>;
+  letterStart: number;
+  letterEnd: number;
+  onHover: (index: number | null) => void;
+  hoveredIndex: number | null;
+}) {
+  // Individual letter appearance
+  const letterOpacity = useTransform(scrollProgress, [letterStart, letterEnd], [0, 1]);
+  const letterY = useTransform(scrollProgress, [letterStart, letterEnd], [25, 0]);
+  
+  const smoothLetterOpacity = useSpring(letterOpacity, { stiffness: 150, damping: 20 });
+  const smoothLetterY = useSpring(letterY, { stiffness: 150, damping: 20 });
+
+  // Hover effects
+  const getScale = () => {
+    if (hoveredIndex === null) return 1;
+    const distance = Math.abs(index - hoveredIndex);
+    if (distance === 0) return 1.3;
+    if (distance === 1) return 1.15;
+    if (distance === 2) return 1.06;
+    return 1;
+  };
+
+  const getHoverY = () => {
+    if (hoveredIndex === null) return 0;
+    const distance = Math.abs(index - hoveredIndex);
+    if (distance === 0) return -10;
+    if (distance === 1) return -5;
+    if (distance === 2) return -2;
+    return 0;
+  };
+
+  const hoverScale = useSpring(getScale(), { stiffness: 500, damping: 28 });
+  const hoverY = useSpring(getHoverY(), { stiffness: 500, damping: 28 });
+
+  const combinedY = useTransform(
+    [smoothLetterY, hoverY] as MotionValue<number>[], 
+    ([scrollY, hY]) => (scrollY as number) + (hY as number)
+  );
+
+  return (
+    <motion.span
+      className="inline-block cursor-default select-none"
+      style={{ 
+        scale: hoverScale,
+        y: combinedY,
+        opacity: smoothLetterOpacity,
+        background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 100%)',
+        WebkitBackgroundClip: 'text',
+        WebkitTextFillColor: 'transparent',
+        backgroundClip: 'text',
+        transformOrigin: 'center center',
+        paddingBottom: '0.1em',
+      }}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(null)}
+    >
+      {letter}
+    </motion.span>
   );
 }
 
@@ -185,7 +301,8 @@ function VueltasText({
 
   const text = "vueltas, y vueltas, y vueltas...";
   const letters = text.split('');
-  const totalLetters = letters.filter(l => l !== ' ').length;
+  const nonSpaceLetters = letters.filter(l => l !== ' ');
+  const totalLetters = nonSpaceLetters.length;
   const progressPerLetter = (endProgress - startProgress) / totalLetters;
 
   // After all letters appear (endProgress), the whole text does:
@@ -223,7 +340,20 @@ function VueltasText({
   const smoothWholeScale = useSpring(wholeTextScale, { stiffness: 80, damping: 20 });
   const smoothWholeY = useSpring(wholeTextY, { stiffness: 80, damping: 20 });
 
-  let letterIndex = 0;
+  // Pre-calculate letter data
+  const letterData: Array<{ letter: string; letterIndex: number; letterStart: number; letterEnd: number }> = [];
+  let letterIdx = 0;
+  for (let i = 0; i < letters.length; i++) {
+    const letter = letters[i];
+    if (letter === ' ') {
+      letterData.push({ letter, letterIndex: -1, letterStart: 0, letterEnd: 0 });
+    } else {
+      const letterStart = startProgress + (letterIdx * progressPerLetter);
+      const letterEnd = letterStart + progressPerLetter * 3;
+      letterData.push({ letter, letterIndex: letterIdx, letterStart, letterEnd });
+      letterIdx++;
+    }
+  }
 
   return (
     <motion.div 
@@ -234,71 +364,22 @@ function VueltasText({
         y: smoothWholeY,
       }}
     >
-      {letters.map((letter, i) => {
-        if (letter === ' ') {
+      {letterData.map((data, i) => {
+        if (data.letter === ' ') {
           return <span key={i} className="inline-block w-[0.3em]">&nbsp;</span>;
         }
-        
-        const currentIndex = letterIndex;
-        const letterStart = startProgress + (currentIndex * progressPerLetter);
-        const letterEnd = letterStart + progressPerLetter * 3;
-        
-        // Individual letter appearance
-        const letterOpacity = useTransform(scrollProgress, [letterStart, letterEnd], [0, 1]);
-        const letterY = useTransform(scrollProgress, [letterStart, letterEnd], [25, 0]);
-        
-        const smoothLetterOpacity = useSpring(letterOpacity, { stiffness: 150, damping: 20 });
-        const smoothLetterY = useSpring(letterY, { stiffness: 150, damping: 20 });
-
-        // Hover effects
-        const getScale = () => {
-          if (hoveredIndex === null) return 1;
-          const distance = Math.abs(currentIndex - hoveredIndex);
-          if (distance === 0) return 1.3;
-          if (distance === 1) return 1.15;
-          if (distance === 2) return 1.06;
-          return 1;
-        };
-
-        const getHoverY = () => {
-          if (hoveredIndex === null) return 0;
-          const distance = Math.abs(currentIndex - hoveredIndex);
-          if (distance === 0) return -10;
-          if (distance === 1) return -5;
-          if (distance === 2) return -2;
-          return 0;
-        };
-
-        const hoverScale = useSpring(getScale(), { stiffness: 500, damping: 28 });
-        const hoverY = useSpring(getHoverY(), { stiffness: 500, damping: 28 });
-
-        const combinedY = useTransform(
-          [smoothLetterY, hoverY] as MotionValue<number>[], 
-          ([scrollY, hY]) => (scrollY as number) + (hY as number)
-        );
-
-        letterIndex++;
 
         return (
-          <motion.span
+          <VueltasLetter
             key={i}
-            className="inline-block cursor-default select-none"
-            style={{ 
-              scale: hoverScale,
-              y: combinedY,
-              opacity: smoothLetterOpacity,
-              background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              transformOrigin: 'center center',
-              paddingBottom: '0.1em',
-            }}
-            onMouseEnter={() => handleHover(currentIndex)}
-            onMouseLeave={() => handleHover(null)}
-          >
-            {letter}
-          </motion.span>
+            letter={data.letter}
+            index={data.letterIndex}
+            scrollProgress={scrollProgress}
+            letterStart={data.letterStart}
+            letterEnd={data.letterEnd}
+            onHover={handleHover}
+            hoveredIndex={hoveredIndex}
+          />
         );
       })}
     </motion.div>

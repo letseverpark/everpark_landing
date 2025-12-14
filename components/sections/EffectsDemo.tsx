@@ -1,7 +1,7 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const targetText = "Buscando dónde aparcar.";
 
@@ -30,7 +30,7 @@ function GlitchMatrixText({ text }: { text: string }) {
 
     // Scramble unresolved characters
     const scrambleInterval = setInterval(() => {
-      setDisplayText(prev => {
+      setDisplayText(() => {
         return text.split('').map((char, i) => {
           if (i < resolvedCount || char === ' ') return char;
           return chars[Math.floor(Math.random() * chars.length)];
@@ -42,16 +42,17 @@ function GlitchMatrixText({ text }: { text: string }) {
       clearInterval(resolveInterval);
       clearInterval(scrambleInterval);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
   useEffect(() => {
-    setDisplayText(prev => {
+    setDisplayText(() => {
       return text.split('').map((char, i) => {
         if (i < resolvedCount || char === ' ') return char;
         return chars[Math.floor(Math.random() * chars.length)];
       }).join('');
     });
-  }, [resolvedCount, text]);
+  }, [resolvedCount, text, chars]);
 
   return (
     <span className="font-mono">
@@ -254,7 +255,7 @@ export default function EffectsDemo() {
             <GlitchMatrixText key={`glitch-${key}`} text={targetText} />
           </div>
           <p className="text-gray-400 text-sm max-w-md mx-auto">
-            Caracteres aleatorios que se estabilizan uno a uno, estilo "descifrado"
+            Caracteres aleatorios que se estabilizan uno a uno, estilo &ldquo;descifrado&rdquo;
           </p>
         </div>
 
