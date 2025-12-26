@@ -39,6 +39,7 @@ export default function IPhoneMockup() {
     >
       {/* 3D Scene Container */}
       <motion.div
+        className="flex flex-col items-center lg:block"
         style={{ 
           transformStyle: 'preserve-3d',
           rotateX,
@@ -46,28 +47,26 @@ export default function IPhoneMockup() {
           position: 'relative',
         }}
       >
-        {/* "Presen" - Left side */}
+        {/* "Presen" - Left side - Hidden on mobile, visible on lg+ */}
         <motion.div
           initial={{ opacity: 0, x: -80 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="hidden lg:block absolute pointer-events-none select-none"
           style={{
-            position: 'absolute',
             right: '50%',
-            marginRight: '140px',
-            top: '220px', // Higher position
+            marginRight: 'clamp(100px, 10vw, 140px)',
+            top: 'clamp(160px, 20vw, 220px)',
             transform: 'translateY(-50%) translateZ(-40px)',
             fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontSize: '140px',
+            fontSize: 'clamp(60px, 10vw, 140px)',
             fontWeight: 700,
             background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 50%, #00e6b0 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
-            letterSpacing: '-6px',
+            letterSpacing: '-0.04em',
             whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            userSelect: 'none',
             filter: 'drop-shadow(0 8px 30px rgba(0, 181, 142, 0.35))',
             lineHeight: 1,
           }}
@@ -75,33 +74,54 @@ export default function IPhoneMockup() {
           Presen
         </motion.div>
         
-        {/* "tamos" - Right side */}
+        {/* "tamos" - Right side - Hidden on mobile, visible on lg+ */}
         <motion.div
           initial={{ opacity: 0, x: 80 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="hidden lg:block absolute pointer-events-none select-none"
           style={{
-            position: 'absolute',
             left: '50%',
-            marginLeft: '140px',
-            top: '220px', // Higher position
+            marginLeft: 'clamp(100px, 10vw, 140px)',
+            top: 'clamp(160px, 20vw, 220px)',
             transform: 'translateY(-50%) translateZ(-40px)',
             fontFamily: "'Space Grotesk', system-ui, sans-serif",
-            fontSize: '140px',
+            fontSize: 'clamp(60px, 10vw, 140px)',
             fontWeight: 700,
             background: 'linear-gradient(135deg, #00e6b0 0%, #00d4a4 50%, #00b58e 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
-            letterSpacing: '-6px',
+            letterSpacing: '-0.04em',
             whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            userSelect: 'none',
             filter: 'drop-shadow(0 8px 30px rgba(0, 181, 142, 0.35))',
             lineHeight: 1,
           }}
         >
           tamos
+        </motion.div>
+        
+        {/* "Presentamos" - Mobile version (stacked above phone) */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:hidden mb-6 text-center"
+          style={{
+            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+            fontSize: 'clamp(28px, 7vw, 42px)',
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #00b58e 0%, #00d4a4 50%, #00e6b0 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.02em',
+            whiteSpace: 'nowrap',
+            filter: 'drop-shadow(0 4px 20px rgba(0, 181, 142, 0.35))',
+            lineHeight: 1,
+          }}
+        >
+          Presentamos
         </motion.div>
 
         {/* Floating animation for phone */}
@@ -112,19 +132,18 @@ export default function IPhoneMockup() {
             repeat: Infinity, 
             ease: 'easeInOut',
           }}
+          className="lg:mt-0"
           style={{ 
             transformStyle: 'preserve-3d',
             position: 'relative',
             zIndex: 20,
           }}
         >
-          {/* iPhone Frame */}
+          {/* iPhone Frame - Responsive sizing */}
           <div 
+            className="w-[220px] h-[450px] sm:w-[250px] sm:h-[510px] md:w-[280px] md:h-[572px] rounded-[40px] sm:rounded-[46px] md:rounded-[52px]"
             style={{
               position: 'relative',
-              width: '280px',
-              height: '572px',
-              borderRadius: '52px',
               background: '#1c1c1e',
               boxShadow: `
                 inset 0 0 0 1px rgba(255,255,255,0.05),
@@ -142,10 +161,10 @@ export default function IPhoneMockup() {
           >
             {/* Titanium frame gradient */}
             <div
+              className="rounded-[40px] sm:rounded-[46px] md:rounded-[52px]"
               style={{
                 position: 'absolute',
                 inset: 0,
-                borderRadius: '52px',
                 background: `linear-gradient(
                   150deg,
                   rgba(180,180,185,0.1) 0%,
@@ -179,46 +198,46 @@ export default function IPhoneMockup() {
               pointerEvents: 'none',
             }} />
             
-            {/* Side buttons */}
-            <div style={{
+            {/* Side buttons - Hidden on very small screens for cleaner look */}
+            <div className="hidden sm:block" style={{
               position: 'absolute',
               right: '-2px',
-              top: '155px',
+              top: '35%',
               width: '3px',
-              height: '75px',
+              height: '13%',
               background: 'linear-gradient(90deg, #38383a, #58585a 50%, #38383a)',
               borderRadius: '0 2px 2px 0',
               boxShadow: '1px 0 2px rgba(0,0,0,0.25)',
               pointerEvents: 'none',
             }} />
-            <div style={{
+            <div className="hidden sm:block" style={{
               position: 'absolute',
               left: '-2px',
-              top: '100px',
+              top: '22%',
               width: '3px',
-              height: '28px',
+              height: '5%',
               background: 'linear-gradient(270deg, #38383a, #58585a 50%, #38383a)',
               borderRadius: '2px 0 0 2px',
               boxShadow: '-1px 0 2px rgba(0,0,0,0.25)',
               pointerEvents: 'none',
             }} />
-            <div style={{
+            <div className="hidden sm:block" style={{
               position: 'absolute',
               left: '-2px',
-              top: '140px',
+              top: '28%',
               width: '3px',
-              height: '48px',
+              height: '8.5%',
               background: 'linear-gradient(270deg, #38383a, #58585a 50%, #38383a)',
               borderRadius: '2px 0 0 2px',
               boxShadow: '-1px 0 2px rgba(0,0,0,0.25)',
               pointerEvents: 'none',
             }} />
-            <div style={{
+            <div className="hidden sm:block" style={{
               position: 'absolute',
               left: '-2px',
-              top: '198px',
+              top: '38%',
               width: '3px',
-              height: '48px',
+              height: '8.5%',
               background: 'linear-gradient(270deg, #38383a, #58585a 50%, #38383a)',
               borderRadius: '2px 0 0 2px',
               boxShadow: '-1px 0 2px rgba(0,0,0,0.25)',
@@ -227,26 +246,10 @@ export default function IPhoneMockup() {
             
             {/* Screen container */}
             <div 
-              style={{
-                position: 'absolute',
-                top: '6px',
-                left: '6px',
-                right: '6px',
-                bottom: '6px',
-                borderRadius: '46px',
-                overflow: 'hidden',
-                background: '#000',
-                pointerEvents: 'none',
-              }}
+              className="absolute top-[5px] left-[5px] right-[5px] bottom-[5px] sm:top-[6px] sm:left-[6px] sm:right-[6px] sm:bottom-[6px] rounded-[35px] sm:rounded-[40px] md:rounded-[46px] overflow-hidden bg-black pointer-events-none"
             >
               <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  borderRadius: '46px',
-                  overflow: 'hidden',
-                  clipPath: 'inset(0 round 46px)',
-                }}
+                className="absolute inset-0 rounded-[35px] sm:rounded-[40px] md:rounded-[46px] overflow-hidden"
               >
                 <Image
                   src="/app-screen.svg"
@@ -264,17 +267,14 @@ export default function IPhoneMockup() {
               </div>
               
               <div 
+                className="absolute inset-0 rounded-[35px] sm:rounded-[40px] md:rounded-[46px] pointer-events-none"
                 style={{
-                  position: 'absolute',
-                  inset: 0,
                   background: `linear-gradient(
                     125deg,
                     rgba(255,255,255,0.04) 0%,
                     rgba(255,255,255,0.01) 15%,
                     transparent 30%
                   )`,
-                  borderRadius: '46px',
-                  pointerEvents: 'none',
                 }}
               />
             </div>

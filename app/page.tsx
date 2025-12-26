@@ -5,6 +5,7 @@ import TransitionSection from '@/components/sections/TransitionSection';
 import SolutionSection from '@/components/sections/SolutionSection';
 import JourneySection from '@/components/sections/JourneySection';
 import ClosingSection from '@/components/sections/ClosingSection';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
       <SolutionSection />
       <JourneySection />
       <ClosingSection />
+      <Footer />
     </main>
   );
 }

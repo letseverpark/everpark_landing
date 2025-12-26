@@ -85,7 +85,7 @@ function ComingSoonBanner() {
   return (
     <div 
       ref={ref}
-      className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden bg-white"
+      className="min-h-screen flex items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white"
     >
       {/* Subtle glow background */}
       <motion.div 
@@ -94,11 +94,11 @@ function ComingSoonBanner() {
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ duration: 1.5, delay: 0.5 }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00b58e] rounded-full opacity-10 blur-[180px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[400px] md:w-[500px] lg:w-[600px] h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] bg-[#00b58e] rounded-full opacity-10 blur-[120px] sm:blur-[150px] md:blur-[180px]" />
       </motion.div>
       
       {/* The text */}
-      <p className="relative text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[10rem] font-bold text-[#00b58e] leading-none tracking-tight">
+      <p className="relative text-3xl sm:text-5xl md:text-6xl lg:text-8xl xl:text-9xl 2xl:text-[10rem] font-bold text-[#00b58e] leading-none tracking-tight text-center">
         {letters.map((letter, i) => (
           <ComingSoonLetter
             key={i}
@@ -164,15 +164,15 @@ export default function JourneySection() {
   return (
     <section className="bg-white">
       {/* Transición: 4 formas */}
-      <div className="min-h-[70vh] flex items-center justify-center px-6 pt-32 md:pt-40">
+      <div className="min-h-[70vh] flex items-center justify-center px-4 sm:px-6 pt-20 sm:pt-32 md:pt-40">
         <div className="text-center">
           <Moment>
-            <p className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-4">
+            <p className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-2 sm:mb-4">
               <span className="text-[#00b58e]">4</span> formas de aparcar.
             </p>
           </Moment>
           <Moment delay={0.3}>
-            <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-300">
+            <p className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-300">
               <span className="text-[#00b58e]">1</span> sola app.
             </p>
           </Moment>
@@ -180,20 +180,20 @@ export default function JourneySection() {
       </div>
 
       {/* Opción 1: Exchanges */}
-      <div className="min-h-screen flex flex-col items-center justify-start pt-32 md:pt-40 px-6 relative overflow-hidden">
+      <div className="min-h-screen flex flex-col items-center justify-start pt-20 sm:pt-32 md:pt-40 px-4 sm:px-6 relative overflow-hidden">
         <div className="text-center relative z-10">
           <Moment>
-            <p className="text-sm font-medium text-gray-400 tracking-widest uppercase mb-6">
+            <p className="text-xs sm:text-sm font-medium text-gray-400 tracking-widest uppercase mb-4 sm:mb-6">
               01
             </p>
           </Moment>
           <Moment delay={0.1}>
-            <p className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gray-900 mb-8">
+            <p className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-4 sm:mb-8">
               Exchanges
             </p>
           </Moment>
           <Moment delay={0.3}>
-            <p className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-500 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-medium text-gray-500 max-w-2xl mx-auto px-2">
               Alguien se va.
               <br />
               <span className="text-gray-900">Tú entras.</span>
@@ -212,20 +212,20 @@ export default function JourneySection() {
       <ComingSoonBanner />
 
       {/* Opción 2: Garages */}
-      <div className="min-h-screen flex items-center justify-center px-6 bg-white">
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 bg-white">
         <div className="text-center">
           <Moment>
-            <p className="text-sm font-medium text-gray-400 tracking-widest uppercase mb-6">
+            <p className="text-xs sm:text-sm font-medium text-gray-400 tracking-widest uppercase mb-4 sm:mb-6">
               02
             </p>
           </Moment>
           <Moment delay={0.1}>
-            <p className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gray-900 mb-8">
+            <p className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-4 sm:mb-8">
               Garages
             </p>
           </Moment>
           <Moment delay={0.3}>
-            <p className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-500 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-medium text-gray-500 max-w-2xl mx-auto px-2">
               Plazas privadas por horas.
               <br />
               <span className="text-gray-900">Hasta 60% más barato.</span>
@@ -235,20 +235,20 @@ export default function JourneySection() {
       </div>
 
       {/* Opción 3: Finder */}
-      <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6">
         <div className="text-center">
           <Moment>
-            <p className="text-sm font-medium text-gray-400 tracking-widest uppercase mb-6">
+            <p className="text-xs sm:text-sm font-medium text-gray-400 tracking-widest uppercase mb-4 sm:mb-6">
               03
             </p>
           </Moment>
           <Moment delay={0.1}>
-            <p className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gray-900 mb-8">
+            <p className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900 mb-4 sm:mb-8">
               Finder
             </p>
           </Moment>
           <Moment delay={0.3}>
-            <p className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-500 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-medium text-gray-500 max-w-2xl mx-auto px-2">
               Todos los parkings.
               <br />
               <span className="text-gray-900">Compara y elige.</span>
@@ -258,38 +258,38 @@ export default function JourneySection() {
       </div>
 
       {/* El 360º cierra */}
-      <div className="min-h-[60vh] flex items-center justify-center px-6 bg-white">
+      <div className="min-h-[60vh] flex items-center justify-center px-4 sm:px-6 bg-white">
         <Moment>
-          <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-medium text-gray-500 text-center">
+          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-medium text-gray-500 text-center">
             Y si no sabes cuál elegir...
           </p>
         </Moment>
       </div>
 
       {/* Opción 4: EverPark 360º */}
-      <div className="min-h-screen flex items-center justify-center px-6 bg-white">
+      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 bg-white">
         <div className="text-center">
           <Moment>
-            <p className="text-sm font-medium text-gray-400 tracking-widest uppercase mb-6">
+            <p className="text-xs sm:text-sm font-medium text-gray-400 tracking-widest uppercase mb-4 sm:mb-6">
               04
             </p>
           </Moment>
           <Moment delay={0.1}>
-            <div className="flex items-center justify-center gap-6 mb-8">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
               <Image
                 src="/logo.svg"
                 alt="EverPark"
                 width={800}
                 height={260}
-                className="h-[100px] sm:h-[140px] md:h-[180px] lg:h-[220px] w-auto"
+                className="h-[50px] sm:h-[80px] md:h-[120px] lg:h-[160px] xl:h-[200px] w-auto"
               />
-              <span className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gray-900">
+              <span className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-gray-900">
                 360º
               </span>
             </div>
           </Moment>
           <Moment delay={0.3}>
-            <p className="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-500 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-medium text-gray-500 max-w-2xl mx-auto px-4">
               El primer asistente
               <br />
               <span className="text-gray-900">específico para aparcar.</span>

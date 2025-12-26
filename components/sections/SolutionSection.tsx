@@ -29,7 +29,7 @@ export default function SolutionSection() {
         animate={isInView ? { opacity: 1 } : {}}
         transition={{ duration: 2, delay: 0.5 }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#00b58e] rounded-full opacity-10 blur-[150px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] md:w-[700px] lg:w-[800px] h-[400px] sm:h-[600px] md:h-[700px] lg:h-[800px] bg-[#00b58e] rounded-full opacity-10 blur-[100px] sm:blur-[120px] md:blur-[150px]" />
       </motion.div>
 
       {/* iPhone Mockup */}
@@ -44,7 +44,7 @@ export default function SolutionSection() {
 
       {/* Logo and text below */}
       <motion.div
-        className="relative z-10 text-center mt-8"
+        className="relative z-10 text-center mt-6 sm:mt-8 px-4"
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.8, delay: 0.8 }}
@@ -56,13 +56,14 @@ export default function SolutionSection() {
             alt="EverPark"
             width={180}
             height={60}
+            className="w-[120px] sm:w-[150px] md:w-[180px] h-auto"
             priority
           />
         </div>
         
         {/* Tagline - 3 lines */}
         <h2 
-          className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight leading-tight"
+          className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight leading-tight"
           style={{
             fontFamily: "'Space Grotesk', system-ui, sans-serif",
             color: '#0a0a0a',

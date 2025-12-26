@@ -14,13 +14,13 @@ function StrikeLine({ text, strikeProgress, textOpacity }: StrikeLineProps) {
   
   return (
     <motion.div 
-      className="text-center relative"
+      className="text-center relative px-4"
       style={{ opacity: textOpacity }}
     >
-      <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium text-gray-500 relative inline-block whitespace-nowrap">
+      <span className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl font-medium text-gray-500 relative inline-block">
         {text}
         <motion.div
-          className="absolute left-0 top-1/2 h-[4px] bg-gradient-to-r from-[#00b58e] to-[#00b58e]/40 rounded-full -translate-y-1/2"
+          className="absolute left-0 top-1/2 h-[2px] sm:h-[3px] md:h-[4px] bg-gradient-to-r from-[#00b58e] to-[#00b58e]/40 rounded-full -translate-y-1/2"
           style={{ width }}
         />
       </span>
@@ -465,7 +465,7 @@ export default function ContradictionSection() {
               
               {/* Glass Card */}
               <div 
-                className="relative rounded-[2.5rem] p-10 md:p-14 lg:p-16"
+                className="relative rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 lg:p-14 xl:p-16"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92))',
                   backdropFilter: 'blur(40px)',
@@ -483,7 +483,7 @@ export default function ContradictionSection() {
                     scrollProgress={scrollYProgress}
                     startProgress={0.44}
                     endProgress={0.50}
-                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-800 leading-tight tracking-tight"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-5xl font-semibold text-gray-800 leading-tight tracking-tight"
                   />
                   
                   {/* Line 2: "vueltas, y vueltas, y vueltas..." - appears letter by letter, then disappears/reappears 2x */}
@@ -491,7 +491,7 @@ export default function ContradictionSection() {
                     scrollProgress={scrollYProgress}
                     startProgress={0.50}
                     endProgress={0.58}
-                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-normal tracking-tight mt-2"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold leading-normal tracking-tight mt-1 sm:mt-2"
                   />
                   
                   {/* Line 3: "esperando a que alguien se vaya." - appears letter by letter */}
@@ -500,7 +500,7 @@ export default function ContradictionSection() {
                     scrollProgress={scrollYProgress}
                     startProgress={0.58}
                     endProgress={0.62}
-                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-800 leading-tight tracking-tight mt-4"
+                    className="text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-5xl font-semibold text-gray-800 leading-tight tracking-tight mt-2 sm:mt-4"
                   />
                 </div>
               </div>
